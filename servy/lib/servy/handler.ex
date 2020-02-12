@@ -1,9 +1,10 @@
 defmodule Servy.Handler do
-    def handle(request) do
-        # conv = parse(request)
-        # conv = router(request)
-        # format_responce(conv)
+    @moduledoc "Handles HTTP requests."
+    
+    @pages_path Path.expand("../../pages", __DIR__)
 
+    @doc "Transform the request into a response "
+    def handle(request) do
         # +++Elixir pipe operator+++
         request 
         |> parse
@@ -14,6 +15,7 @@ defmodule Servy.Handler do
         |> format_responce
     end
 
+    @doc "Logs 404 requests"
     def track(%{status: 404, path: path} = conv) do
         IO.puts "Warning: #{path} is on the lose"
         conv
@@ -61,7 +63,7 @@ defmodule Servy.Handler do
     end
 
     def route(%{ method: "GET", path: "/about"} = conv) do
-        Path.expand("../../pages", __DIR__)
+        @pages_path
         |> Path.join("about.html")
         |> File.read
         |> handle_file(conv)
@@ -78,6 +80,7 @@ defmodule Servy.Handler do
     def handle_file({:error, reason}, conv) do
         %{conv | status: 500, resp_body: "File error: #{reason}"}
     end
+
     # def route(%{ method: "GET", path: "/about"} = conv) do
     #     file = 
     #       Path.expand("../../pages", __DIR__)
