@@ -6,10 +6,13 @@ defmodule Servy.Handler do
 
         # +++Elixir pipe operator+++
         request 
-        |> parse 
+        |> parse
+        |> log 
         |> route 
         |> format_responce
     end
+
+    def log(conv), do: IO.inspect conv
 
     def parse(request) do
          
@@ -22,7 +25,11 @@ defmodule Servy.Handler do
     end
 
     def route(conv) do
-        %{conv | resp_body: "Bears, Lions, Tigers"}
+        if conv.path == "/wildthings" do
+            %{conv | resp_body: "Bears, Lions, Tigers"}
+        else
+            %{conv | resp_body: "Teddy, Smokey, Paddington"}
+        end
     end
 
     def format_responce(conv) do
@@ -38,6 +45,20 @@ end
 
 request = """
 GET /wildthings HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+
+
+responce = Servy.Handler.handle(request)
+
+IO.puts responce
+
+request = """
+GET /bears HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
