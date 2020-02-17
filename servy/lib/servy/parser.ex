@@ -8,19 +8,47 @@ defmodule Servy.Parser do
         [request_line | header_line] = String.split(top, "\n")
         
         [method, path, _] = String.split(request_line, " ")
+
+        headers =  parse_headers(header_line, %{})
         
-        params =  parse_params(params_string)
+        params =  parse_params(headers["Content-Type"], params_string)
 
         %Conv{ 
             method: method, 
             path: path,
-            params: params
+            params: params,
+            headers: headers
         }
     end
 
-    def parse_params(params_string) do
+    def parse_headers([head | tail], headers) do
+        # IO.puts "Head: #{inspect(head)}, Tail: #{inspect(tail)}"
+        [key, value] = String.split(head, ": ")
+        # IO.puts "Key: #{inspect(key)}, Value: #{inspect(value)}"
+        headers = Map.put(headers, key, value)
+        # IO.inspect headers
+
+        parse_headers(tail, headers)
+    end
+
+    def parse_headers([], headers), do: headers
+
+    def parse_params("application/x-www-form-urlencoded", params_string) do
         params_string |> String.trim |> URI.decode_query
     end
 
+    def parse_params(_, _), do: %{}
 
 end
+
+
+# defmodule Recurse do
+#     def loopy([head | tail]) do
+#         IO.puts "Head: #{head}, Tail: #{inspect(tail)}"
+#         loopy(tail)
+#     end
+
+#     def loopy([]), do: IO.puts "Done!"
+# end
+
+# Recurse.loopy([1, 2, 3, 4, 5])

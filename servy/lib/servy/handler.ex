@@ -164,13 +164,12 @@ responce = Servy.Handler.handle(request)
 
 IO.puts responce
 
-
 request = """
 POST /bears HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
-Content-Type: application/x-www-from-urlencoded
+Content-Type: multipart/from-data
 Content-Length: 21
 
 name=Baloo&type=Brown
@@ -179,3 +178,20 @@ name=Baloo&type=Brown
 responce = Servy.Handler.handle(request)
 
 IO.puts responce
+
+request = """
+POST /bears HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 21
+
+name=Baloo&type=Brown
+"""
+
+responce = Servy.Handler.handle(request)
+
+IO.puts responce
+
+
