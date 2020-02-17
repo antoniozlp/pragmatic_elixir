@@ -32,6 +32,11 @@ defmodule Servy.Handler do
         %{conv | status: 200, resp_body: "Bear #{id}"}
     end
 
+    def route(%Conv{method: "POST", path: "/bears"} = conv) do
+        %{conv | status: 201,
+                 resp_body: "Create a #{conv.params["type"]} bear nemad #{conv.params["name"]}!"}
+    end
+
     def route(%Conv{ method: "GET", path: "/about"} = conv) do
         @pages_path
         |> Path.join("about.html")
@@ -153,6 +158,22 @@ Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
 
+"""
+
+responce = Servy.Handler.handle(request)
+
+IO.puts responce
+
+
+request = """
+POST /bears HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+Content-Type: application/x-www-from-urlencoded
+Content-Length: 21
+
+name=Baloo&type=Brown
 """
 
 responce = Servy.Handler.handle(request)
